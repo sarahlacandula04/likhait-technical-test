@@ -4,3 +4,4 @@ class Api::CategoriesController < ApplicationController
     render json: categories
   end
 end
+# FEATURE-001 Implementation
