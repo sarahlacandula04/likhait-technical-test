@@ -26,6 +26,17 @@ export function ExpenseForm({
       initialData,
       onSubmit,
     });
+    // BONUS-001: Validate future dates
+  const validateDate = (dateStr: string) => {
+    const selectedDate = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate > today) {
+      return "Date cannot be in the future";
+    }
+    return "";
+  };
 
   const formStyle: React.CSSProperties = {
     display: "flex",
@@ -43,6 +54,9 @@ export function ExpenseForm({
     value: category,
     label: category,
   }));
+  // BONUS-001: Set today's date as max
+  const today = new Date();
+  const maxDate = today.toISOString().split('T')[0];
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
@@ -83,11 +97,20 @@ export function ExpenseForm({
         label="Date"
         type="date"
         value={formData.date}
-        onChange={(e) => handleChange("date", e.target.value)}
-        error={errors.date}
+        onChange={(e) => {
+          const dateError = validateDate(e.target.value);
+          if (!dateError) {
+            handleChange("date", e.target.value);
+          }
+        }}
+        error={errors.date || validateDate(formData.date)}
         fullWidth
         required
+        max={maxDate}
       />
+      <small style={{ color: "#666", fontSize: "0.85rem" }}>
+        You can only create expenses for today or past dates
+      </small>
 
       <div style={buttonGroupStyle}>
         <Button
